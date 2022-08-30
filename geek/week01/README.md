@@ -26,7 +26,7 @@
 ```go
 // 代表应用本身
 type App struct {
-	
+	servers *[]Server
 }
 
 // 代表一个http服务器，一个服务器监听一个端口
@@ -116,7 +116,7 @@ func (s *serverMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 ```go
 type Option func(*App)
 type ShutdownCallback func(ctx context.Context)
-type WithShutdownCallbacks func(cbs ...ShutdownCallback) Option {
+func WithShutdownCallbacks func(cbs ...ShutdownCallback) Option {
 	return func(app *App) {
 		app.cbs = cbs
     }
