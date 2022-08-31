@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"geek/week01/server"
+	"geek/week01/service"
 	"io"
 	"log"
 	"net/http"
@@ -13,24 +13,24 @@ import (
 )
 
 func main() {
-	cache := &server.SyncCache{
-		Cache: make(server.Cache, 1),
-		DB:    make(server.DB, 1),
+	cache := &service.SyncCache{
+		Cache: make(service.Cache, 1),
+		DB:    make(service.DB, 1),
 	}
 
-	s1 := server.NewServer("biz", "localhost:8080")
+	s1 := service.NewServer("biz", "localhost:8080")
 	s1.Handle("/work", http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		workHandler(writer, request, cache)
 	}))
-	s2 := server.NewServer("admin", "localhost:8081")
-	app := server.NewApp(
-		[]*server.Server{s1, s2},
-		server.WithShutdownCallback(func(ctx context.Context) {
+	s2 := service.NewServer("admin", "localhost:8081")
+	app := service.NewApp(
+		[]*service.Server{s1, s2},
+		service.WithShutdownCallback(func(ctx context.Context) {
 			StoreCacheToDBCallback(ctx, cache)
 		}),
-		server.WithShutdownTimeout(server.DefaultShutdownTimeout),
-		server.WithWaitTimeout(server.DefaultWaitTimeout),
-		server.WithCallbackTime(server.DefaultCbTimeout),
+		service.WithShutdownTimeout(service.DefaultShutdownTimeout),
+		service.WithWaitTimeout(service.DefaultWaitTimeout),
+		service.WithCallbackTime(service.DefaultCbTimeout),
 	)
 
 	for i := 1; i <= 3; i++ {
@@ -57,7 +57,7 @@ func main() {
 }
 
 // StoreCacheToDBCallback 关闭时刷新缓存到DB
-func StoreCacheToDBCallback(ctx context.Context, cache *server.SyncCache) {
+func StoreCacheToDBCallback(ctx context.Context, cache *service.SyncCache) {
 	done := make(chan int, 1)
 	go func() {
 		log.Printf("刷新缓存到DB\n")
@@ -74,7 +74,7 @@ func StoreCacheToDBCallback(ctx context.Context, cache *server.SyncCache) {
 	}
 }
 
-func workHandler(writer http.ResponseWriter, request *http.Request, cache *server.SyncCache) {
+func workHandler(writer http.ResponseWriter, request *http.Request, cache *service.SyncCache) {
 	body, err := io.ReadAll(request.Body)
 	if err != nil {
 		_, err = writer.Write([]byte("未接收到工作数据，请重新提交"))
@@ -87,7 +87,7 @@ func workHandler(writer http.ResponseWriter, request *http.Request, cache *serve
 	time.Sleep(time.Second * 5)
 	val, ok := cache.Get("key")
 	if !ok {
-		cache.Set("key", &server.Data{Name: string(body), Age: 18})
+		cache.Set("key", &service.Data{Name: string(body), Age: 18})
 		val, _ = cache.Get("key")
 	}
 	data, _ := json.Marshal(val)

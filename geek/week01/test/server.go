@@ -61,7 +61,7 @@ func (s *serverMux) Start(addr string) {
 }
 
 func (s *serverMux) Stop() {
-	//err := s.server.Close()
+	//err := s.service.Close()
 	//if err != nil {
 	//	panic("关闭服务失败，addr：")
 	//}
