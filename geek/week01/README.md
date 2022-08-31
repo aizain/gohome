@@ -26,7 +26,7 @@
 ```go
 // 代表应用本身
 type App struct {
-	servers *[]Server
+	servers []*Server
 }
 
 // 代表一个http服务器，一个服务器监听一个端口
