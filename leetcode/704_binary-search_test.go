@@ -71,3 +71,50 @@ func Test_search(t *testing.T) {
 		})
 	}
 }
+
+func Test_search20221115(t *testing.T) {
+	tests := []struct {
+		name   string
+		nums   []int
+		target int
+		want   int
+	}{
+		{
+			name:   "exist",
+			nums:   []int{-1, 0, 3, 5, 9, 12},
+			target: 9,
+			want:   4,
+		},
+		{
+			name:   "not exist",
+			nums:   []int{-1, 0, 3, 5, 9, 12},
+			target: 2,
+			want:   -1,
+		},
+		{
+			name:   "nil",
+			nums:   nil,
+			target: 2,
+			want:   -1,
+		},
+		{
+			name:   "-n",
+			nums:   []int{-1, 0, 5},
+			target: -1,
+			want:   0,
+		},
+		{
+			name:   "5",
+			nums:   []int{5},
+			target: 5,
+			want:   0,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := search20221115(tt.nums, tt.target); got != tt.want {
+				assert.Equal(t, tt.want, got)
+			}
+		})
+	}
+}
